@@ -54,7 +54,7 @@ and every slice is labelled in text, so nothing depends on colour alone.
 
 ## Running it locally
 
-Requires Python 3.9+ and Node 20+.
+Requires Python 3.9+ and Node 22.12+ (Vite 8 and Vitest 5 need it; CI uses 24).
 
 ```bash
 # 1. refresh the data (optional: a snapshot is already committed)

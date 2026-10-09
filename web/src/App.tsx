@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Controls } from './components/Controls'
 import { LanguageShare } from './components/LanguageShare'
 import { ProjectCard } from './components/ProjectCard'
@@ -28,6 +28,11 @@ export default function App({ data = projectIndex, now }: { data?: ProjectIndex;
 
   // One timestamp per mount, so every relative time on the page agrees.
   const [mountedAt] = useState(() => now ?? new Date())
+
+  // index.html ships a generic title because the account is configurable.
+  useEffect(() => {
+    document.title = `Project index · ${owner.login}`
+  }, [owner.login])
 
   const slices = useMemo(() => languageBreakdown(projects), [projects])
   const colors = useMemo(() => languageColors(projects), [projects])

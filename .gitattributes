@@ -1,0 +1,4 @@
+# Keep line endings stable across the Windows dev machine and the Linux runner.
+* text=auto eol=lf
+*.png binary
+*.svg text eol=lf

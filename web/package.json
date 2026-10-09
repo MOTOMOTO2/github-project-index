@@ -3,6 +3,9 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
   "description": "Single-page index of every GitHub project, built from data fetched at build time.",
   "scripts": {
     "dev": "vite",

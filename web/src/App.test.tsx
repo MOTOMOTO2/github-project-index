@@ -152,6 +152,7 @@ describe('the index page', () => {
 
   it('links to the owner and dates the data', () => {
     renderPage()
+    expect(document.title).toBe('Project index · MOTOMOTO2')
     expect(screen.getByRole('link', { name: 'github.com/MOTOMOTO2' })).toHaveAttribute(
       'href',
       'https://github.com/MOTOMOTO2',
