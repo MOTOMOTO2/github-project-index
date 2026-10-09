@@ -1,0 +1,16 @@
+# Node
+node_modules/
+web/dist/
+web/.vite/
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# Editors / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
