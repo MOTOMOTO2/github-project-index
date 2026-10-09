@@ -1,0 +1,87 @@
+name: Build and deploy the project index
+
+on:
+  # Keep the index fresh without anyone touching it.
+  schedule:
+    - cron: '17 6 * * 1' # every Monday, 06:17 UTC
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Let a running deploy finish rather than cancelling it half way.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Test the data layer
+        run: python -m unittest discover -s tests -v
+
+      - name: Configure Pages
+        id: pages
+        uses: actions/configure-pages@v5
+        with:
+          # Turns Pages on for this repository on the first run, so nobody has
+          # to flip the switch in Settings by hand.
+          enablement: true
+
+      - name: Fetch the projects from the GitHub API
+        env:
+          # The default GITHUB_TOKEN is enough for public repositories. Add a
+          # PROJECT_INDEX_TOKEN secret (a PAT) to raise the rate limit or, with
+          # --include-private, to index private repositories too.
+          GITHUB_TOKEN: ${{ secrets.PROJECT_INDEX_TOKEN || secrets.GITHUB_TOKEN }}
+        run: |
+          python scripts/fetch_projects.py \
+            --user "${{ github.repository_owner }}" \
+            --output web/src/data/projects.json \
+            --fallback-to-existing
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install
+        working-directory: web
+        run: npm ci
+
+      - name: Test the page
+        working-directory: web
+        run: npm test
+
+      - name: Build
+        working-directory: web
+        env:
+          # /<repo>/ for a project site, / for a user or custom-domain site.
+          PAGES_BASE: ${{ steps.pages.outputs.base_path }}
+        run: npm run build
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

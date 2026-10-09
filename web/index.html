@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <title>Project index</title>
+    <meta
+      name="description"
+      content="Every project on my GitHub account: name, description, language, last push and a live link where there is one."
+    />
+    <meta name="color-scheme" content="light dark" />
+    <script>
+      // Apply the saved theme before first paint so there is no flash.
+      try {
+        var stored = localStorage.getItem('project-index-theme')
+        if (stored === 'light' || stored === 'dark') document.documentElement.dataset.theme = stored
+      } catch (error) {
+        /* private mode: fall back to the OS setting */
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
