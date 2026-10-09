@@ -7,8 +7,22 @@ The list is **read from the GitHub API at build time**, not hand-written, and a
 GitHub Actions workflow rebuilds and redeploys the page **every Monday**, so it
 cannot quietly go stale.
 
-🔗 **https://motomoto2.github.io/github-project-index/** (live once the first
-workflow run finishes — see [Deployment](#deployment))
+🔗 **https://motomoto2.github.io/github-project-index/** — not live yet: this
+repository is private, and GitHub Pages needs a paid plan for private
+repositories. One switch fixes it; see [Deployment](#deployment).
+
+## What it looks like
+
+The page builds and runs — these are captured from the production build by
+`node scripts/screenshot.mjs`, so they are the real thing, not mock-ups.
+
+| Desktop, light | Desktop, dark |
+| --- | --- |
+| ![The index in its light theme](docs/screenshots/desktop-light.png) | ![The same page in its dark theme](docs/screenshots/desktop-dark.png) |
+
+<p align="center">
+  <img src="docs/screenshots/mobile-light.png" alt="The index at phone width, with the cards stacked" width="320">
+</p>
 
 ## How it works
 
@@ -73,13 +87,21 @@ npm run build          # type-check + production build into web/dist
 npm run preview        # serve the built output
 npm test               # the page's test suite (vitest)
 npm run typecheck      # tsc --noEmit
+npm run screenshot     # refresh docs/screenshots from the built page
 ```
 
 And from the repository root:
 
 ```bash
 python -m unittest discover -s tests -v    # the data layer's test suite
+node scripts/screenshot.mjs                # same screenshots, without npm
 ```
+
+`scripts/screenshot.mjs` builds `web/dist` if it is missing, serves it with
+`vite preview`, drives headless Chrome over the DevTools protocol, writes the
+three images in `docs/screenshots/`, and stops the server and the browser again
+before it exits. It needs Chrome or Edge installed; set `CHROME_PATH` if it is
+somewhere unusual. Nothing is left running, so it is safe on a headless box.
 
 67 frontend tests and 33 Python tests cover the description/live-link rules,
 the date formatting, the filtering and the rendered page.
@@ -110,9 +132,38 @@ every push to `main`, and on demand from the Actions tab. It runs both test
 suites, fetches fresh data, builds, and publishes to GitHub Pages.
 
 The workflow asks Actions to enable Pages for the repository on its first run
-(`actions/configure-pages` with `enablement: true`). If that is blocked by
-organisation policy, set **Settings → Pages → Source** to **GitHub Actions**
-once by hand and re-run the workflow.
+(`actions/configure-pages` with `enablement: true`).
+
+### The site is not published yet
+
+That first run failed, and the live URL still 404s:
+
+```
+Create Pages site failed. Error: Resource not accessible by integration
+```
+
+The cause is not the workflow. **This repository is private, and GitHub Pages
+for a private repository requires a paid plan** — the API refuses outright:
+
+```
+$ gh api -X POST repos/MOTOMOTO2/github-project-index/pages -f build_type=workflow
+Your current plan does not support GitHub Pages for this repository. (HTTP 422)
+```
+
+Either one of these publishes it, and neither needs a code change:
+
+- **Make the repository public** — `gh repo edit MOTOMOTO2/github-project-index --visibility public`,
+  then re-run the workflow. Pages is free for public repositories. (Note this
+  publishes the repository's contents; it is left as a deliberate decision
+  rather than something the build does for you.)
+- **Or upgrade the account to Pro**, and set **Settings → Pages → Source** to
+  **GitHub Actions**.
+
+Until then the workflow no longer fails on it. `Configure Pages` is
+`continue-on-error`, so the run still fetches, tests and builds, attaches the
+built site to the run as the **`site`** artifact, and leaves a warning saying
+the page was not published. The `deploy` job skips itself rather than failing.
+The moment Pages becomes available, the same workflow deploys with no edit.
 
 Two optional extras:
 
@@ -131,6 +182,7 @@ failing the deploy.
 
 ```
 scripts/fetch_projects.py      GitHub API -> projects.json (stdlib only)
+scripts/screenshot.mjs         built page -> docs/screenshots (stdlib only)
 tests/test_fetch_projects.py   data-layer tests (unittest)
 web/src/App.tsx                the page
 web/src/components/            stat row, language share bar, controls, project card
@@ -152,3 +204,11 @@ Choices made while building this that are worth knowing:
 - **The snapshot is committed** so that `npm run build` works on a clean
   checkout without network access; CI overwrites it before every build.
 - **Dates are rendered in UTC**, matching the timestamps GitHub reports.
+- **Repository visibility is left alone.** Publishing the page needs this
+  repository to be public (or the account on a paid plan). Flipping a private
+  repository to public puts its contents on the open internet, so that is a
+  decision to make deliberately rather than a step the build takes — see
+  [Deployment](#deployment).
+- **The screenshots are committed** so the page can be reviewed from the
+  repository itself while there is no live URL. `npm run screenshot` regenerates
+  them; they are the production build, at 2× scale.
