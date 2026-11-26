@@ -59,7 +59,7 @@ export const sampleIndex = makeIndex([
     description_source: 'readme',
     language: 'TypeScript',
     pushed_at: '2026-10-01T20:15:24Z',
-    live_url: 'https://adenyadegar.github.io/personal-project-portfolio/',
+    live_url: 'https://adenyadegar.github.io/',
     live_url_source: 'pages',
   }),
   makeProject({
