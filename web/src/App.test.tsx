@@ -52,7 +52,7 @@ describe('the index page', () => {
     // name -> repository, description, language, last push, live link
     expect(within(card as HTMLElement).getByRole('link', { name: 'claude-remote-dashboard' })).toHaveAttribute(
       'href',
-      'https://github.com/MOTOMOTO2/claude-remote-dashboard',
+      'https://github.com/adenyadegar/claude-remote-dashboard',
     )
     expect(
       within(card as HTMLElement).getByText(/The phone half of claude-remote/),
@@ -62,7 +62,7 @@ describe('the index page', () => {
     expect(within(card as HTMLElement).getByText('8 Oct 2026')).toBeInTheDocument()
     expect(
       within(card as HTMLElement).getByRole('link', { name: 'Open the live site for claude-remote-dashboard' }),
-    ).toHaveAttribute('href', 'https://motomoto2.github.io/claude-remote-dashboard/')
+    ).toHaveAttribute('href', 'https://adenyadegar.github.io/claude-remote-dashboard/')
   })
 
   it('says so when a project has no description, no language or no live link', () => {
@@ -152,10 +152,10 @@ describe('the index page', () => {
 
   it('links to the owner and dates the data', () => {
     renderPage()
-    expect(document.title).toBe('Project index · MOTOMOTO2')
-    expect(screen.getByRole('link', { name: 'github.com/MOTOMOTO2' })).toHaveAttribute(
+    expect(document.title).toBe('Project index · adenyadegar')
+    expect(screen.getByRole('link', { name: 'github.com/adenyadegar' })).toHaveAttribute(
       'href',
-      'https://github.com/MOTOMOTO2',
+      'https://github.com/adenyadegar',
     )
     expect(screen.getByText(/Data fetched from the GitHub REST API/)).toBeInTheDocument()
   })

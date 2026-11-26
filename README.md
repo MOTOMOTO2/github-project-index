@@ -7,7 +7,7 @@ The list is **read from the GitHub API at build time**, not hand-written, and a
 GitHub Actions workflow rebuilds and redeploys the page **every Monday**, so it
 cannot quietly go stale.
 
-🔗 **https://motomoto2.github.io/github-project-index/** — not live yet: this
+🔗 **https://adenyadegar.github.io/github-project-index/** — not live yet: this
 repository is private, and GitHub Pages needs a paid plan for private
 repositories. One switch fixes it; see [Deployment](#deployment).
 
@@ -72,7 +72,7 @@ Requires Python 3.9+ and Node 22.12+ (Vite 8 and Vitest 5 need it; CI uses 24).
 
 ```bash
 # 1. refresh the data (optional: a snapshot is already committed)
-python scripts/fetch_projects.py --user MOTOMOTO2
+python scripts/fetch_projects.py --user adenyadegar
 
 # 2. run the page
 cd web
@@ -112,7 +112,7 @@ the date formatting, the filtering and the rendered page.
 
 | Flag | Effect |
 | --- | --- |
-| `--user <login>` | whose repositories to index (default `MOTOMOTO2`, or `$PROJECT_INDEX_USER`) |
+| `--user <login>` | whose repositories to index (default `adenyadegar`, or `$PROJECT_INDEX_USER`) |
 | `--output <path>` | where to write the JSON (default `web/src/data/projects.json`) |
 | `--token <token>` | API token (default `$GITHUB_TOKEN`); raises the rate limit from 60/hour to 5,000/hour |
 | `--include-private` | index private repositories too — needs a personal access token for that account |
@@ -146,13 +146,13 @@ The cause is not the workflow. **This repository is private, and GitHub Pages
 for a private repository requires a paid plan** — the API refuses outright:
 
 ```
-$ gh api -X POST repos/MOTOMOTO2/github-project-index/pages -f build_type=workflow
+$ gh api -X POST repos/adenyadegar/github-project-index/pages -f build_type=workflow
 Your current plan does not support GitHub Pages for this repository. (HTTP 422)
 ```
 
 Either one of these publishes it, and neither needs a code change:
 
-- **Make the repository public** — `gh repo edit MOTOMOTO2/github-project-index --visibility public`,
+- **Make the repository public** — `gh repo edit adenyadegar/github-project-index --visibility public`,
   then re-run the workflow. Pages is free for public repositories. (Note this
   publishes the repository's contents; it is left as a deliberate decision
   rather than something the build does for you.)

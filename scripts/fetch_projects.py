@@ -5,7 +5,7 @@ Run this before building the web app. It writes a single JSON document
 (``web/src/data/projects.json`` by default) that the React page imports at build
 time, so the deployed page is static but never hand-maintained.
 
-    python scripts/fetch_projects.py --user MOTOMOTO2
+    python scripts/fetch_projects.py --user adenyadegar
 
 Only the standard library is used, so CI needs no pip install.
 """
@@ -24,9 +24,9 @@ from datetime import datetime, timezone
 from typing import Any, Iterable
 
 API_ROOT = "https://api.github.com"
-USER_AGENT = "github-project-index (+https://github.com/MOTOMOTO2/github-project-index)"
+USER_AGENT = "github-project-index (+https://github.com/adenyadegar/github-project-index)"
 DESCRIPTION_LIMIT = 180
-DEFAULT_USER = "MOTOMOTO2"
+DEFAULT_USER = "adenyadegar"
 DEFAULT_OUTPUT = os.path.join("web", "src", "data", "projects.json")
 SCHEMA_VERSION = 1
 
